@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>10 анимаций — recycling symbol</title>
+  <style>
+    :root {
+      --bg: #0f1218;
+      --panel: #181c24;
+      --text: #e8ecf1;
+      --muted: #8b93a2;
+      --accent: #f5a623;
+      --border: #2a3140;
+      --icon: #e8ecf1;
+      --dim: #3a4250;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 1.5rem;
+    }
+
+    h1 { margin: 0 0 0.35rem; font-size: 1.35rem; font-weight: 650; }
+    .sub { margin: 0 0 1.25rem; color: var(--muted); font-size: 0.9rem; }
+
+    .layout {
+      display: grid;
+      gap: 1.25rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 900px) {
+      .layout { grid-template-columns: 280px 1fr; align-items: start; }
+    }
+
+    .picker {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.75rem;
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .picker button {
+      appearance: none;
+      text-align: left;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 0.65rem 0.75rem;
+      font-size: 0.88rem;
+      cursor: pointer;
+      line-height: 1.25;
+      width: 100%;
+    }
+
+    .picker button:hover { background: #222833; }
+    .picker button.active {
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+    }
+    .picker button small {
+      display: block;
+      color: var(--muted);
+      font-size: 0.75rem;
+      margin-top: 0.15rem;
+    }
+
+    .stage-wrap { display: grid; gap: 1rem; }
+
+    .stage {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      min-height: 360px;
+      display: grid;
+      place-items: center;
+      padding: 2rem;
+    }
+
+    .icon-wrap {
+      width: min(56vw, 260px);
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+    }
+
+    .icon-wrap svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      display: block;
+    }
+
+    .icon-wrap svg path {
+      fill: var(--icon);
+      stroke: none;
+      stroke-width: 0;
+      opacity: 1;
+      animation: none;
+    }
+
+    .code-panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .code-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-head span { font-size: 0.85rem; color: var(--muted); }
+
+    #copy-btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: #222833;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 0.4rem 0.75rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    #copy-btn:hover { border-color: var(--accent); }
+    #copy-btn.ok { border-color: #3dff7a; color: #3dff7a; }
+
+    pre {
+      margin: 0;
+      padding: 1rem;
+      overflow: auto;
+      max-height: 280px;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: #d5dde8;
+      white-space: pre-wrap;
+    }
+
+    /*
+      Порядок стрелок в SVG (по часовой): верх → право → лево
+      Delays через data-arrow — не зависят от defs/Fe в разметке
+    */
+    .anim-chase .arrow[data-arrow="top"] path,
+    .anim-flow-fade .arrow[data-arrow="top"] path,
+    .anim-flow-wipe .arrow[data-arrow="top"] path,
+    .anim-flow-grow .arrow[data-arrow="top"] path,
+    .anim-cascade .arrow[data-arrow="top"] path { animation-delay: 0s !important; }
+
+    .anim-chase .arrow[data-arrow="right"] path,
+    .anim-flow-fade .arrow[data-arrow="right"] path,
+    .anim-flow-wipe .arrow[data-arrow="right"] path,
+    .anim-cascade .arrow[data-arrow="right"] path { animation-delay: -0.7s !important; }
+
+    .anim-chase .arrow[data-arrow="left"] path,
+    .anim-flow-fade .arrow[data-arrow="left"] path,
+    .anim-flow-wipe .arrow[data-arrow="left"] path,
+    .anim-cascade .arrow[data-arrow="left"] path { animation-delay: -1.4s !important; }
+
+    .anim-flow-grow .arrow[data-arrow="right"] path {
+      animation-delay: calc(-1 * var(--grow-dur) / 3) !important;
+    }
+    .anim-flow-grow .arrow[data-arrow="left"] path {
+      animation-delay: calc(-2 * var(--grow-dur) / 3) !important;
+    }
+
+    .anim-cascade .arrow[data-arrow="right"] path { animation-delay: 0.35s !important; }
+    .anim-cascade .arrow[data-arrow="left"] path { animation-delay: 0.7s !important; }
+
+    /* 1. Вращение */
+    .anim-spin { animation: pcm-spin 3s linear infinite; }
+    @keyframes pcm-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* 2. Пульс */
+    .anim-pulse { animation: pcm-pulse 2.2s ease-in-out infinite; }
+    @keyframes pcm-pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.12); opacity: 0.75; }
+    }
+
+    /* 3. Каскад — тоже по кругу стрелок */
+    .anim-cascade .arrow path {
+      animation: pcm-cascade 2.4s ease-in-out infinite !important;
+    }
+    @keyframes pcm-cascade {
+      0%, 100% { opacity: 0.2; }
+      40% { opacity: 1; }
+    }
+
+    /* 4. Покачивание */
+    .anim-wobble { animation: pcm-wobble 2.4s ease-in-out infinite; }
+    @keyframes pcm-wobble {
+      0%, 100% { transform: rotate(-12deg); }
+      50% { transform: rotate(12deg); }
+    }
+
+    /* 5. Дыхание обводки */
+    .anim-breathe svg path {
+      fill: none !important;
+      stroke: var(--icon) !important;
+      stroke-linejoin: round;
+      animation: pcm-breathe 2.2s ease-in-out infinite !important;
+    }
+    @keyframes pcm-breathe {
+      0%, 100% { stroke-width: 5; opacity: 0.65; }
+      50% { stroke-width: 18; opacity: 1; }
+    }
+
+    /* 6. Бегущий акцент (база) */
+    .anim-chase .arrow path {
+      animation: pcm-chase 2.1s linear infinite !important;
+    }
+    @keyframes pcm-chase {
+      0%, 100% { fill: var(--dim); }
+      50% { fill: #ffffff; }
+    }
+
+    /* 7. Тик */
+    .anim-tick { animation: pcm-tick 2.4s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+    @keyframes pcm-tick {
+      0% { transform: rotate(0deg); }
+      16% { transform: rotate(60deg); }
+      33% { transform: rotate(120deg); }
+      50% { transform: rotate(180deg); }
+      66% { transform: rotate(240deg); }
+      83% { transform: rotate(300deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* 8. Перетекание — фирменный акцент по кругу */
+    .anim-flow-fade .arrow path {
+      animation: pcm-flow-fade 2.1s ease-in-out infinite !important;
+    }
+    @keyframes pcm-flow-fade {
+      0%, 100% { fill: #5c3a12; opacity: 0.35; }
+      35% { fill: #FE9F01; opacity: 1; }
+      55% { fill: #FC6B0F; opacity: 0.9; }
+    }
+
+    /* Fe в центре — всегда статичен */
+    .icon-wrap .fe-label {
+      fill: url(#pcm-fe-grad);
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      font-size: 72px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      pointer-events: none;
+    }
+
+    /* 9. Перетекание — плавная волна по кругу (3 стрелки) */
+    .anim-flow-grow {
+      --grow-dur: 3s;
+    }
+    .anim-flow-grow .arrow path {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: pcm-flow-grow var(--grow-dur) ease-in-out infinite !important;
+    }
+    /* Мягкая «синусоида»: пик → спад → пауза, следующая стрелка подхватывает */
+    @keyframes pcm-flow-grow {
+      0% {
+        fill: var(--dim);
+        transform: scale(0.94);
+        opacity: 0.22;
+      }
+      18% {
+        fill: #ffffff;
+        transform: scale(1.05);
+        opacity: 1;
+      }
+      36% {
+        fill: var(--icon);
+        transform: scale(1.01);
+        opacity: 0.72;
+      }
+      55% {
+        fill: var(--dim);
+        transform: scale(0.95);
+        opacity: 0.32;
+      }
+      100% {
+        fill: var(--dim);
+        transform: scale(0.94);
+        opacity: 0.22;
+      }
+    }
+
+    /* 10. Перетекание — волна яркости по кругу */
+    .anim-flow-wipe .arrow path {
+      animation: pcm-flow-wipe 2.1s linear infinite !important;
+    }
+    @keyframes pcm-flow-wipe {
+      0% { fill: var(--dim); filter: brightness(0.55); }
+      20% { fill: #ffffff; filter: brightness(1.35); }
+      45% { fill: var(--icon); filter: brightness(1); }
+      100% { fill: var(--dim); filter: brightness(0.55); }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside>
+      <h1>Recycling animations</h1>
+      <p class="sub">Только значок · выбери · скопируй CSS</p>
+      <div class="picker" id="picker"></div>
+    </aside>
+
+    <div class="stage-wrap">
+      <div class="stage">
+        <div id="icon-wrap" class="icon-wrap anim-spin">
+          <!-- Порядок групп строго по часовой: верх → право → низ/лево -->
+          <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" aria-label="Recycling">
+            <g class="arrow" data-arrow="top">
+              <path d="M191.067,3.804h-7.471c-11.552,0-30.004,5.49-56.288,52.987c-5.732,10.353-29.618,51.073-36.736,63.198 l91.55,53.692l69.976-119.189C235.759,27.052,221.962,3.804,191.067,3.804z"/>
+              <path d="M385.764,163.988L444,62.611L401.872,86.41c0,0-23.82-42.458-29.343-51.976 c-8.923-15.37-26.218-30.553-44.702-29.937c-2.839,0.077-60.503-0.616-106.074-0.66c14.909,9.186,24.59,25.052,35.009,42.646 l0.044-0.088l54.297,92.54l-43.394,25.053H385.764z"/>
+            </g>
+            <g class="arrow" data-arrow="right">
+              <path d="M489.935,236.844c-6.072-10.177-29.387-51.182-36.341-63.45l-92.276,52.449l68.226,120.19 c31.906-0.408,58.939-0.738,74.386-27.44c1.276-2.212,2.519-4.368,3.774-6.546C513.458,302.056,517.925,283.352,489.935,236.844z"/>
+              <path d="M434.164,354.141l-107.262,0.77v-50.093l-59.038,102.255l58.664,101.123l0.496-48.377 c0,0,48.64,0.605,59.676,0.55c17.78-0.076,39.543-7.404,48.268-23.765c1.353-2.498,30.784-52.118,53.582-91.496 c-15.36,8.318-33.998,8.748-54.407,9.001L434.164,354.141z"/>
+            </g>
+            <g class="arrow" data-arrow="left">
+              <path d="M75.531,431.741c1.265,2.178,2.542,4.346,3.74,6.48c5.799,10.034,19.76,23.214,74.035,22.258 c11.85-0.221,59.05,0.109,73.132,0.22l0.683-106.151l-138.168-0.957C73.342,381.416,60.106,404.994,75.531,431.741z"/>
+              <path d="M79.59,353.481l52.954-93.223l43.372,25.052l-58.984-102.256L0,183.307l41.677,24.613 c0,0-24.854,41.764-30.344,51.38c-8.835,15.415-13.369,37.98-3.554,53.67c1.496,2.464,29.706,52.712,52.46,92.188 c0.473-17.516,9.406-33.822,19.398-51.678H79.59z"/>
+            </g>
+            <defs>
+              <linearGradient id="pcm-fe-grad" x1="256" y1="200" x2="256" y2="320" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#FE9F01"/>
+                <stop offset="1" stop-color="#FC6B0F"/>
+              </linearGradient>
+            </defs>
+            <text class="fe-label" x="256" y="272" text-anchor="middle" dominant-baseline="middle">Fe</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="code-panel">
+        <div class="code-head">
+          <span id="code-label">CSS</span>
+          <button type="button" id="copy-btn">Копировать CSS</button>
+        </div>
+        <pre id="code-out"></pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SVG_MARKUP = document.getElementById("icon-wrap").innerHTML;
+
+    const animations = [
+      {
+        id: "spin",
+        className: "anim-spin",
+        title: "1. Вращение",
+        desc: "полный оборот по часовой",
+        css: `.recycle {
+  animation: pcm-spin 3s linear infinite;
+}
+.recycle path { fill: #e8ecf1; }
+@keyframes pcm-spin {
+  to { transform: rotate(360deg); }
+}`,
+      },
+      {
+        id: "pulse",
+        className: "anim-pulse",
+        title: "2. Пульс",
+        desc: "scale + opacity",
+        css: `.recycle {
+  animation: pcm-pulse 2.2s ease-in-out infinite;
+}
+.recycle path { fill: #e8ecf1; }
+@keyframes pcm-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.12); opacity: 0.75; }
+}`,
+      },
+      {
+        id: "cascade",
+        className: "anim-cascade",
+        title: "3. Каскад",
+        desc: "поочерёдная прозрачность",
+        css: `.recycle .arrow path {
+  fill: #e8ecf1;
+  animation: pcm-cascade 2.4s ease-in-out infinite;
+}
+.recycle .arrow:nth-child(1) path { animation-delay: 0s; }
+.recycle .arrow:nth-child(2) path { animation-delay: 0.35s; }
+.recycle .arrow:nth-child(3) path { animation-delay: 0.7s; }
+@keyframes pcm-cascade {
+  0%, 100% { opacity: 0.2; }
+  40% { opacity: 1; }
+}`,
+      },
+      {
+        id: "wobble",
+        className: "anim-wobble",
+        title: "4. Покачивание",
+        desc: "влево-вправо",
+        css: `.recycle {
+  animation: pcm-wobble 2.4s ease-in-out infinite;
+}
+.recycle path { fill: #e8ecf1; }
+@keyframes pcm-wobble {
+  0%, 100% { transform: rotate(-12deg); }
+  50% { transform: rotate(12deg); }
+}`,
+      },
+      {
+        id: "breathe",
+        className: "anim-breathe",
+        title: "5. Дыхание обводки",
+        desc: "толщина stroke",
+        css: `.recycle path {
+  fill: none;
+  stroke: #e8ecf1;
+  stroke-linejoin: round;
+  animation: pcm-breathe 2.2s ease-in-out infinite;
+}
+@keyframes pcm-breathe {
+  0%, 100% { stroke-width: 5; opacity: 0.65; }
+  50% { stroke-width: 18; opacity: 1; }
+}`,
+      },
+      {
+        id: "chase",
+        className: "anim-chase",
+        title: "6. Бегущий акцент",
+        desc: "подсветка сегментов по кругу",
+        css: `.recycle .arrow path {
+  animation: pcm-chase 2.1s linear infinite;
+}
+.recycle .arrow:nth-child(1) path { animation-delay: 0s; }
+.recycle .arrow:nth-child(2) path { animation-delay: -0.7s; }
+.recycle .arrow:nth-child(3) path { animation-delay: -1.4s; }
+@keyframes pcm-chase {
+  0%, 100% { fill: #3a4250; }
+  50% { fill: #ffffff; }
+}`,
+      },
+      {
+        id: "tick",
+        className: "anim-tick",
+        title: "7. Тик по кругу",
+        desc: "рывки по 60°",
+        css: `.recycle {
+  animation: pcm-tick 2.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+.recycle path { fill: #e8ecf1; }
+@keyframes pcm-tick {
+  0% { transform: rotate(0deg); }
+  16% { transform: rotate(60deg); }
+  33% { transform: rotate(120deg); }
+  50% { transform: rotate(180deg); }
+  66% { transform: rotate(240deg); }
+  83% { transform: rotate(300deg); }
+  100% { transform: rotate(360deg); }
+}`,
+      },
+      {
+        id: "flow-fade",
+        className: "anim-flow-fade",
+        title: "8. Перетекание — появление",
+        desc: "фирменный оранжевый + Fe в центре",
+        css: `.recycle .arrow path {
+  animation: pcm-flow-fade 2.1s ease-in-out infinite;
+}
+.recycle .arrow[data-arrow="top"] path { animation-delay: 0s; }
+.recycle .arrow[data-arrow="right"] path { animation-delay: -0.7s; }
+.recycle .arrow[data-arrow="left"] path { animation-delay: -1.4s; }
+
+@keyframes pcm-flow-fade {
+  0%, 100% { fill: #5c3a12; opacity: 0.35; }
+  35% { fill: #FE9F01; opacity: 1; }
+  55% { fill: #FC6B0F; opacity: 0.9; }
+}
+
+/* Fe статичен */
+.recycle .fe-label {
+  fill: url(#pcm-fe-grad);
+  font-size: 72px;
+  font-weight: 700;
+}`,
+      },
+      {
+        id: "flow-grow",
+        className: "anim-flow-grow",
+        title: "9. Перетекание — налив",
+        desc: "волна по кругу: верх → право → лево",
+        css: `/* SVG: 3 группы .arrow по часовой (верх, право, лево) */
+.recycle {
+  --grow-dur: 3s;
+}
+.recycle .arrow path {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pcm-flow-grow var(--grow-dur) ease-in-out infinite;
+}
+.recycle .arrow:nth-child(1) path { animation-delay: 0s; }
+.recycle .arrow:nth-child(2) path { animation-delay: calc(-1 * var(--grow-dur) / 3); }
+.recycle .arrow:nth-child(3) path { animation-delay: calc(-2 * var(--grow-dur) / 3); }
+
+@keyframes pcm-flow-grow {
+  0%   { fill: #3a4250; transform: scale(0.94); opacity: 0.22; }
+  18%  { fill: #ffffff; transform: scale(1.05); opacity: 1; }
+  36%  { fill: #e8ecf1; transform: scale(1.01); opacity: 0.72; }
+  55%  { fill: #3a4250; transform: scale(0.95); opacity: 0.32; }
+  100% { fill: #3a4250; transform: scale(0.94); opacity: 0.22; }
+}`,
+      },
+      {
+        id: "flow-wipe",
+        className: "anim-flow-wipe",
+        title: "10. Перетекание — волна",
+        desc: "яркая волна бежит по стрелкам",
+        css: `.recycle .arrow path {
+  animation: pcm-flow-wipe 2.1s linear infinite;
+}
+.recycle .arrow:nth-child(1) path { animation-delay: 0s; }
+.recycle .arrow:nth-child(2) path { animation-delay: -0.7s; }
+.recycle .arrow:nth-child(3) path { animation-delay: -1.4s; }
+@keyframes pcm-flow-wipe {
+  0% { fill: #3a4250; filter: brightness(0.55); }
+  20% { fill: #ffffff; filter: brightness(1.35); }
+  45% { fill: #e8ecf1; filter: brightness(1); }
+  100% { fill: #3a4250; filter: brightness(0.55); }
+}`,
+      },
+    ];
+
+    const wrap = document.getElementById("icon-wrap");
+    const picker = document.getElementById("picker");
+    const codeOut = document.getElementById("code-out");
+    const codeLabel = document.getElementById("code-label");
+    const copyBtn = document.getElementById("copy-btn");
+
+    let current = animations[0];
+
+    function select(anim) {
+      current = anim;
+      wrap.className = "icon-wrap " + anim.className;
+      wrap.innerHTML = SVG_MARKUP;
+      void wrap.offsetWidth;
+
+      codeOut.textContent = anim.css;
+      codeLabel.textContent = "CSS · " + anim.title.replace(/^\d+\.\s*/, "");
+
+      picker.querySelectorAll("button").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.id === anim.id);
+      });
+
+      copyBtn.textContent = "Копировать CSS";
+      copyBtn.classList.remove("ok");
+    }
+
+    animations.forEach((anim) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.dataset.id = anim.id;
+      btn.innerHTML = anim.title + "<small>" + anim.desc + "</small>";
+      btn.addEventListener("click", () => select(anim));
+      picker.appendChild(btn);
+    });
+
+    copyBtn.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(current.css);
+        copyBtn.textContent = "Скопировано";
+        copyBtn.classList.add("ok");
+        setTimeout(() => {
+          copyBtn.textContent = "Копировать CSS";
+          copyBtn.classList.remove("ok");
+        }, 1600);
+      } catch (e) {
+        copyBtn.textContent = "Ошибка копирования";
+      }
+    });
+
+    select(animations.find((a) => a.id === "flow-fade") ?? animations[0]);
+  </script>
+</body>
+</html>

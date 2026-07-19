@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Анимация по контуру — символ переработки</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #3dff7a;
+      --accent-dim: #1a9e4a;
+      --border: #30363d;
+    }
+
+    [data-theme="light"] {
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --text: #1f2328;
+      --muted: #656d76;
+      --accent: #12a54b;
+      --accent-dim: #0d7a38;
+      --border: #d0d7de;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1.25rem;
+      padding: 1.25rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .stage {
+      width: min(92vw, 560px);
+      aspect-ratio: 1;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+      position: relative;
+    }
+
+    #recycle {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .st0 {
+      fill: #111;
+      transition: fill 0.25s ease;
+    }
+
+    [data-theme="dark"] .st0,
+    :root:not([data-theme="light"]) .st0 {
+      fill: #c9d1d9;
+    }
+
+    [data-theme="light"] .st0 {
+      fill: #111111;
+    }
+
+    #motion-path {
+      fill: none;
+      stroke: none;
+      pointer-events: none;
+    }
+
+    .trail-dot {
+      fill: var(--accent);
+      pointer-events: none;
+    }
+
+    .controls {
+      width: min(92vw, 560px);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.9rem 1rem;
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    button:hover {
+      border-color: var(--accent-dim);
+    }
+
+    button.active {
+      background: color-mix(in srgb, var(--accent) 22%, transparent);
+      border-color: var(--accent);
+    }
+
+    label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex: 1;
+      min-width: 180px;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      accent-color: var(--accent);
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin: 0;
+      max-width: 560px;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    #speed-value {
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+      min-width: 3.2em;
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <h1>Частица по контуру символа переработки</h1>
+
+  <div class="stage" aria-label="Анимация символа переработки">
+    <svg id="recycle" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img">
+      <title>Символ переработки с движущейся частицей</title>
+
+      <g id="arrows">
+        <path class="st0" id="p1" d="M79.59,353.481l52.954-93.223l43.372,25.052l-58.984-102.256L0,183.307l41.677,24.613
+          c0,0-24.854,41.764-30.344,51.38c-8.835,15.415-13.369,37.98-3.554,53.67c1.496,2.464,29.706,52.712,52.46,92.188
+          c0.473-17.516,9.406-33.822,19.398-51.678H79.59z" />
+        <path class="st0" id="p2" d="M75.531,431.741c1.265,2.178,2.542,4.346,3.74,6.48c5.799,10.034,19.76,23.214,74.035,22.258
+          c11.85-0.221,59.05,0.109,73.132,0.22l0.683-106.151l-138.168-0.957C73.342,381.416,60.106,404.994,75.531,431.741z" />
+        <path class="st0" id="p3" d="M191.067,3.804h-7.471c-11.552,0-30.004,5.49-56.288,52.987c-5.732,10.353-29.618,51.073-36.736,63.198
+          l91.55,53.692l69.976-119.189C235.759,27.052,221.962,3.804,191.067,3.804z" />
+        <path class="st0" id="p4" d="M385.764,163.988L444,62.611L401.872,86.41c0,0-23.82-42.458-29.343-51.976
+          c-8.923-15.37-26.218-30.553-44.702-29.937c-2.839,0.077-60.503-0.616-106.074-0.66c14.909,9.186,24.59,25.052,35.009,42.646
+          l0.044-0.088l54.297,92.54l-43.394,25.053H385.764z" />
+        <path class="st0" id="p5" d="M434.164,354.141l-107.262,0.77v-50.093l-59.038,102.255l58.664,101.123l0.496-48.377
+          c0,0,48.64,0.605,59.676,0.55c17.78-0.076,39.543-7.404,48.268-23.765c1.353-2.498,30.784-52.118,53.582-91.496
+          c-15.36,8.318-33.998,8.748-54.407,9.001L434.164,354.141z" />
+        <path class="st0" id="p6" d="M489.935,236.844c-6.072-10.177-29.387-51.182-36.341-63.45l-92.276,52.449l68.226,120.19
+          c31.906-0.408,58.939-0.738,74.386-27.44c1.276-2.212,2.519-4.368,3.774-6.546C513.458,302.056,517.925,283.352,489.935,236.844z" />
+      </g>
+
+      <path id="motion-path" />
+      <g id="trail"></g>
+      <circle id="orb" r="9" fill="#3dff7a" cx="0" cy="0" />
+    </svg>
+  </div>
+
+  <div class="controls">
+    <div class="row">
+      <button type="button" id="btn-toggle" class="active">Пауза</button>
+      <button type="button" id="btn-theme">Светлая тема</button>
+      <button type="button" id="btn-reset">Сброс</button>
+    </div>
+    <div class="row">
+      <label>
+        Скорость
+        <input type="range" id="speed" min="0.35" max="2.5" step="0.05" value="1" />
+        <span id="speed-value">×1.00</span>
+      </label>
+    </div>
+  </div>
+
+  <p class="hint">
+    Шарик идёт по контуру исходных path (getPointAtLength), полный круг ~3.5 с при скорости ×1.
+    След — короткая цепочка затухающих точек.
+  </p>
+
+  <script>
+    const PATH_ORDER = ["p3", "p4", "p6", "p5", "p2", "p1"];
+
+    const motionPath = document.getElementById("motion-path");
+    const orb = document.getElementById("orb");
+    const trailGroup = document.getElementById("trail");
+    const btnToggle = document.getElementById("btn-toggle");
+    const btnTheme = document.getElementById("btn-theme");
+    const btnReset = document.getElementById("btn-reset");
+    const speedInput = document.getElementById("speed");
+    const speedValue = document.getElementById("speed-value");
+
+    const BASE_DURATION = 3.5;
+    const TRAIL_COUNT = 18;
+
+    let totalLength = 0;
+    let playing = true;
+    let speed = 1;
+    let progress = 0;
+    let lastTs = null;
+    const trailHistory = [];
+
+    function buildMotionPath() {
+      const parts = [];
+
+      PATH_ORDER.forEach((id, index) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        let d = el.getAttribute("d").trim();
+
+        if (index === 0) {
+          parts.push(d);
+        } else {
+          if (!/^[Mm]/.test(d)) {
+            const start = el.getPointAtLength(0);
+            d = `M${start.x},${start.y} ` + d;
+          }
+          parts.push(d);
+        }
+      });
+
+      motionPath.setAttribute("d", parts.join(" "));
+      totalLength = motionPath.getTotalLength();
+    }
+
+    function initTrail() {
+      trailGroup.innerHTML = "";
+      for (let i = 0; i < TRAIL_COUNT; i++) {
+        const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        c.setAttribute("class", "trail-dot");
+        c.setAttribute("r", String(6.5 - (i / TRAIL_COUNT) * 4.5));
+        c.setAttribute("opacity", "0");
+        c.setAttribute("cx", "0");
+        c.setAttribute("cy", "0");
+        trailGroup.appendChild(c);
+      }
+    }
+
+    function renderAt(distance) {
+      const d = ((distance % totalLength) + totalLength) % totalLength;
+      const pt = motionPath.getPointAtLength(d);
+
+      orb.setAttribute("cx", pt.x);
+      orb.setAttribute("cy", pt.y);
+
+      trailHistory.unshift({ x: pt.x, y: pt.y });
+      if (trailHistory.length > TRAIL_COUNT) {
+        trailHistory.length = TRAIL_COUNT;
+      }
+
+      const dots = trailGroup.children;
+      for (let i = 0; i < dots.length; i++) {
+        const pos = trailHistory[i];
+        if (!pos) {
+          dots[i].setAttribute("opacity", "0");
+          continue;
+        }
+        const t = 1 - i / TRAIL_COUNT;
+        dots[i].setAttribute("cx", pos.x);
+        dots[i].setAttribute("cy", pos.y);
+        dots[i].setAttribute("opacity", String(0.55 * t * t));
+        dots[i].setAttribute("fill", i === 0 ? "#7dffb0" : "#3dff7a");
+      }
+    }
+
+    function tick(ts) {
+      if (lastTs == null) lastTs = ts;
+      const dt = (ts - lastTs) / 1000;
+      lastTs = ts;
+
+      if (playing && totalLength > 0) {
+        const duration = BASE_DURATION / speed;
+        progress = (progress + dt / duration) % 1;
+        renderAt(progress * totalLength);
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    function setPlaying(next) {
+      playing = next;
+      btnToggle.textContent = playing ? "Пауза" : "Старт";
+      btnToggle.classList.toggle("active", playing);
+      lastTs = null;
+    }
+
+    btnToggle.addEventListener("click", () => setPlaying(!playing));
+
+    btnReset.addEventListener("click", () => {
+      progress = 0;
+      trailHistory.length = 0;
+      renderAt(0);
+    });
+
+    speedInput.addEventListener("input", () => {
+      speed = Number(speedInput.value);
+      speedValue.textContent = `×${speed.toFixed(2)}`;
+    });
+
+    btnTheme.addEventListener("click", () => {
+      const light = document.body.getAttribute("data-theme") === "light";
+      document.body.setAttribute("data-theme", light ? "dark" : "light");
+      btnTheme.textContent = light ? "Светлая тема" : "Тёмная тема";
+    });
+
+    buildMotionPath();
+    initTrail();
+    renderAt(0);
+    requestAnimationFrame(tick);
+
+    window.addEventListener("load", () => {
+      buildMotionPath();
+      renderAt(progress * totalLength);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,255 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0d1117;
+  --bg-elevated: #141a22;
+  --bg-card: #1a222d;
+  --steel: #1f4e79;
+  --steel-soft: #2a6aa3;
+  --accent: #f5a623;
+  --accent-hot: #ffb84a;
+  --accent-dim: #c47d12;
+  --metal: #8b98a8;
+  --metal-light: #c5ced8;
+  --concrete: #3a4450;
+  --text: #f2f5f8;
+  --text-muted: #9aa6b2;
+  --line: rgba(245, 166, 35, 0.22);
+  --glow: rgba(245, 166, 35, 0.45);
+  --danger: #ff6b4a;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-card: var(--bg-card);
+  --color-steel: var(--steel);
+  --color-steel-soft: var(--steel-soft);
+  --color-accent: var(--accent);
+  --color-accent-hot: var(--accent-hot);
+  --color-accent-dim: var(--accent-dim);
+  --color-metal: var(--metal);
+  --color-metal-light: var(--metal-light);
+  --color-concrete: var(--concrete);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --font-display: var(--font-oxanium);
+  --font-body: var(--font-titillium);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body), system-ui, sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 55%, transparent);
+  color: #0a0d12;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.font-display {
+  font-family: var(--font-display), var(--font-body), sans-serif;
+  letter-spacing: 0.04em;
+}
+
+.tech-grid {
+  background-image:
+    linear-gradient(rgba(245, 166, 35, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 166, 35, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.metal-noise {
+  position: relative;
+  isolation: isolate;
+}
+
+.metal-noise::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.glow-btn {
+  box-shadow:
+    0 0 0 1px rgba(245, 166, 35, 0.35),
+    0 0 24px rgba(245, 166, 35, 0.28),
+    0 10px 30px rgba(0, 0, 0, 0.35);
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease,
+    background 0.25s ease;
+}
+
+.glow-btn:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 1px rgba(255, 184, 74, 0.55),
+    0 0 36px rgba(245, 166, 35, 0.45),
+    0 14px 36px rgba(0, 0, 0, 0.4);
+}
+
+.outline-btn {
+  border: 1px solid var(--accent);
+  background: rgba(13, 17, 23, 0.55);
+  transition:
+    background 0.25s ease,
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease;
+}
+
+.outline-btn:hover {
+  background: rgba(245, 166, 35, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(245, 166, 35, 0.2);
+}
+
+.industrial-card {
+  background:
+    linear-gradient(160deg, rgba(31, 78, 121, 0.18), transparent 45%),
+    linear-gradient(180deg, #1a222d 0%, #121820 100%);
+  border: 1px solid rgba(139, 152, 168, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.industrial-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(245, 166, 35, 0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 18px 40px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(245, 166, 35, 0.12);
+}
+
+.section-line {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(245, 166, 35, 0.55),
+    transparent
+  );
+}
+
+.photo-treatment {
+  filter: contrast(1.08) saturate(0.85) brightness(0.78);
+}
+
+.photo-treatment:hover {
+  filter: contrast(1.1) saturate(0.95) brightness(0.88);
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 3.2s ease-in-out infinite;
+}
+
+@keyframes draw-line {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.draw-line {
+  transform-origin: left center;
+  animation: draw-line 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Logo recycle — вариант 8: фирменное перетекание, Fe статичен */
+@keyframes pcm-flow-fade {
+  0%,
+  100% {
+    fill: #5c3a12;
+    opacity: 0.35;
+  }
+  35% {
+    fill: #fe9f01;
+    opacity: 1;
+  }
+  55% {
+    fill: #fc6b0f;
+    opacity: 0.9;
+  }
+}
+
+.logo-recycle .arrow path {
+  animation: pcm-flow-fade 2.1s ease-in-out infinite;
+}
+
+.logo-recycle .arrow[data-arrow="top"] path {
+  animation-delay: 0s;
+}
+
+.logo-recycle .arrow[data-arrow="right"] path {
+  animation-delay: -0.7s;
+}
+
+.logo-recycle .arrow[data-arrow="left"] path {
+  animation-delay: -1.4s;
+}
+
+.logo-recycle .fe-label {
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-recycle .arrow path {
+    animation: none;
+    fill: #fe9f01;
+    opacity: 1;
+  }
+}
+
+.container-page {
+  width: min(1180px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+@media (min-width: 768px) {
+  .container-page {
+    width: min(1180px, calc(100% - 3rem));
+  }
+}
