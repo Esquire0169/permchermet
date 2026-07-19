@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useId } from "react";
+import { withBase } from "@/lib/paths";
 
 type Props = {
   href?: string;
@@ -10,6 +12,7 @@ type Props = {
 
 /** Фирменный recycling-знак: стрелки с перетеканием + статичный Fe */
 function RecycleMark() {
+  const gradId = useId().replace(/:/g, "");
   return (
     <svg
       viewBox="0 0 512 512"
@@ -18,7 +21,7 @@ function RecycleMark() {
     >
       <defs>
         <linearGradient
-          id="pcm-fe-grad"
+          id={gradId}
           x1="256"
           y1="200"
           x2="256"
@@ -50,7 +53,7 @@ function RecycleMark() {
         y="272"
         textAnchor="middle"
         dominantBaseline="middle"
-        fill="url(#pcm-fe-grad)"
+        fill={`url(#${gradId})`}
         fontFamily="var(--font-oxanium), system-ui, sans-serif"
         fontSize="92"
         fontWeight="700"
@@ -67,7 +70,7 @@ export function Logo({ href = "/", className = "" }: Props) {
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
       <RecycleMark />
       <Image
-        src="/brand/logo-wordmark.svg"
+        src={withBase("/brand/logo-wordmark.svg")}
         alt="Пермчермет"
         width={168}
         height={28}

@@ -1,3 +1,5 @@
+import { withBase } from "@/lib/paths";
+
 export type Service = {
   slug: string;
   title: string;
@@ -15,7 +17,7 @@ export const services: Service[] = [
     title: "Прием лома черных и цветных металлов",
     short:
       "Принимаем черный и цветной лом на собственной площадке — с прозрачным взвешиванием и расчетом в день сдачи.",
-    image: "/images/service-accept.png",
+    image: withBase("/images/service-accept.png"),
     icon: "metal",
     benefits: [
       "Честные электронные весы до 70 тонн",
@@ -46,7 +48,7 @@ export const services: Service[] = [
     title: "Самовывоз металлолома",
     short:
       "Выезжаем своими ломовозами с манипулятором и бункеровозами — от 3 тонн, бесплатно при объеме от 5 тонн.",
-    image: "/images/service-pickup.png",
+    image: withBase("/images/service-pickup.png"),
     icon: "truck",
     benefits: [
       "Ломовозы с гидроманипулятором от 3 тонн",
@@ -78,7 +80,7 @@ export const services: Service[] = [
     title: "Демонтаж металлоконструкций",
     short:
       "Демонтируем конструкции с погрузкой и вывозом лома — для юрлиц по договору и для частных заказчиков.",
-    image: "/images/service-demontazh.png",
+    image: withBase("/images/service-demontazh.png"),
     icon: "crane",
     benefits: [
       "Опыт сложных демонтажных работ",
@@ -109,7 +111,7 @@ export const services: Service[] = [
     title: "Утилизация транспортных средств",
     short:
       "Принимаем старые, разбитые и сгоревшие авто с выдачей документов для ГИБДД и оплатой за лом.",
-    image: "/images/service-util.png",
+    image: withBase("/images/service-util.png"),
     icon: "car",
     benefits: [
       "Свидетельство об утилизации и ПСА",

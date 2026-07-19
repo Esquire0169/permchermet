@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { LeadProvider } from "@/components/ui/LeadModal";
 import { site } from "@/data/site";
+import { withBase } from "@/lib/paths";
 import "./globals.css";
 
 const oswald = Oswald({
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
   },
   description: site.description,
   icons: {
-    icon: "/brand/favicon.png",
+    icon: withBase("/brand/favicon.png"),
   },
 };
 

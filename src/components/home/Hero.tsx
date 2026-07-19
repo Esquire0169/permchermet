@@ -5,6 +5,7 @@ import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion
 import { useRef } from "react";
 import { site } from "@/data/site";
 import { LeadTrigger } from "@/components/ui/LeadModal";
+import { withBase } from "@/lib/paths";
 
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
@@ -26,7 +27,7 @@ export function Hero() {
         style={reduce ? undefined : { y, opacity }}
       >
         <Image
-          src="/images/hero-yard.png"
+          src={withBase("/images/hero-yard.png")}
           alt="Площадка приема металлолома Пермчермет"
           fill
           priority

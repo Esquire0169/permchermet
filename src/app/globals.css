@@ -199,11 +199,12 @@ img {
 }
 
 /* Logo recycle — вариант 8: фирменное перетекание, Fe статичен */
+/* Dim-состояние достаточно яркое, чтобы все 3 стрелки читались на тёмном фоне */
 @keyframes pcm-flow-fade {
   0%,
   100% {
-    fill: #5c3a12;
-    opacity: 0.35;
+    fill: #e89218;
+    opacity: 0.78;
   }
   35% {
     fill: #fe9f01;
@@ -211,11 +212,13 @@ img {
   }
   55% {
     fill: #fc6b0f;
-    opacity: 0.9;
+    opacity: 0.98;
   }
 }
 
 .logo-recycle .arrow path {
+  fill: #fe9f01;
+  opacity: 1;
   animation: pcm-flow-fade 2.1s ease-in-out infinite;
 }
 
